@@ -1,4 +1,6 @@
-![image](https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/36c8a279-b478-40be-a2f0-4a49ca4f6a5a)
+![image](https://github.com/AlbertoFAraujo/SQL_EDA_Capes/assets/105552990/bfbd333e-c110-48ba-801d-68a2e6708517)
+
+**Link Databrick:** [EDA_Capes_databrick](https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/4181035651798210/16913316101068/4641171831932757/latest.html)
 
 ### Tecnologias utilizadas: 
 | [<img align="center" alt="sql" height="60" width="60" src="https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/805dfaf3-4725-47f9-86d5-241953a018ab">](https://learn.microsoft.com/en-us/sql/sql-server/?view=sql-server-ver16) | [<img align="center" alt="databrick" height="60" width="60" src="https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/b188ba83-b87f-4f80-b79f-e91be05602af">](https://www.databricks.com/) | [<img align="center" alt="apache_spark" height="60" width="100" src="https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/4b3cbec3-98da-499b-9d83-908ce9458d29">](https://spark.apache.org/docs/latest/)|
@@ -12,386 +14,578 @@
 
 ### Sobre a base de Dados
 
-Dados dos cidadãos brasileiros residentes no Brasil e no exterior que se alistaram no Serviço Militar Obrigatório de 2022 e relação das Juntas de Serviço Militar (JSM). Estão incluídas em todas as tabelas de dados do Serviço Militar as seguintes informações: ano de nascimento, peso, altura, tamanho da cabeça, número do calçado, tamanho da cintura, religião, município, UF e país de nascimento, estado civil, sexo, escolaridade, ano de alistamento, se foi dispensado ou não, zona residencial, município, UF e país de residência, junta, município e UF da junta. Estão incluídas na tabela de dados das JSM as seguintes informações: código, nome, endereço, bairro, CEP, telefone, município e UF.
+Divulgação das atividades de fomento a bolsas de estudos no Brasil e no exterior de programas de mobilidade internacional, registradas em sistemas de pagamentos informatizados da Capes a partir de 1984. O acervo de dados disponibilizado apresenta possibilidade de recortes por variáveis geográficas, perfil dos bolsistas, áreas de conhecimento e evolução dos valores pagos ao longo da série histórica.
 
-**Fonte:** https://dados.gov.br/dados/conjuntos-dados/servico-militar
+**Fonte:** https://dadosabertos.capes.gov.br/group/bolsas-ativas-em-programas-de-mobilidade-internacional
 
 <hr>
 
 ### Objetivo: 
 
-O objetivo desta análise exploratória é examinar e compreender as características demográficas e físicas dos cidadãos brasileiros alistados no Serviço Militar Obrigatório do ano de 2022. Por meio da análise dos dados disponíveis, buscamos identificar padrões, tendências e insights relevantes relacionados à distribuição de idade, gênero, região geográfica, estado civil, dispensa militar, educação, entre outras variáveis. Este estudo visa fornecer uma visão abrangente do perfil dos alistados, contribuindo para uma melhor compreensão do contexto socioeconômico e demográfico das pessoas sujeitas ao serviço militar obrigatório no Brasil.
+O objetivo desta análise exploratória é identificar padrões e tendências nas atividades de fomento a bolsas de estudos no Brasil e no exterior, promovidas pela Capes desde 2005. Utilizando os dados disponibilizados nos sistemas de pagamentos informatizados da Capes, pretendemos realizar recortes por variáveis geográficas, perfil dos bolsistas, áreas de conhecimento e evolução dos valores pagos ao longo da série histórica. O propósito é fornecer insights para otimizar a alocação de recursos, identificar áreas de maior demanda e avaliar o impacto das políticas de fomento à mobilidade internacional no desenvolvimento acadêmico e científico do país.
 
 <hr>
 
 ### Script SQL
 ```SQL
--- Visualizando a base de dados para conhecimento das variáveis
-SELECT * FROM alistamento_exercito2022 LIMIT 10
-```
-| ANO_NASCIMENTO | PESO | ALTURA | CABECA | CALCADO | CINTURA | MUN_NASCIMENTO | UF_NASCIMENTO |
-|----------------|------|--------|--------|---------|---------|----------------|---------------|
-| 1960           | 69   | 176    | 56     | 42      | null    | RIO DE JANEIRO | RJ            |
-| 1995           | 79   | 181    | 56     | 41      | 88      | PALMEIRA DAS MISSOES | RS     |
-| 1974           | 64   | 165    | 58     | 38      | 75      | PORTO ALEGRE   | RS            |
-| 1998           | 55   | 180    | 53     | 41      | 74      | JANDIRA        | SP            |
-| 1999           | 76   | 186    | 57     | 42      | 88      | CACERES        | MT            |
-| 2000           | 76   | 184    | 58     | 42      | 78      | BRASILIA       | DF            |
-| 2000           | 60   | 165    | 53     | 40      | 71      | OLINDA         | PE            |
-| 2000           | 98   | 184    | 56     | 45      | 90      | OLINDA         | PE            |
-| 2003           | 78   | 175    | 58     | 42      | 87      | BRASILIA       | DF            |
-| 2003           | 80   | 170    | 54     | 40      | 79      | FORTALEZA      | CE            |
-
-```SQL
--- Visualizando a base de dados para conhecimento das variáveis
-SELECT * FROM estados_brasileiro
-```
-| Estado          | Sigla | Região     |
-|----------------|-------|------------|
-| Rondônia       | RO    | Norte      |
-| Sergipe        | SE    | Nordeste   |
-| Minas Gerais   | MG    | Sudeste    |
-| Bahia          | BA    | Nordeste   |
-| Mato Grosso    | MT    | Centro     |
-| Rio de Janeiro | RJ    | Sudeste    |
-| Paraná         | PR    | Sul        |
-| Roraima        | RR    | Norte      |
-| Ceará          | CE    | Nordeste   |
-| Paraíba        | PB    | Nordeste   |
-
-```SQL
--- Calculando o número total de alistados em 2022.
-SELECT 
-  count(*) AS Total_alistados
-FROM alistamento_exercito2022
-```
-| Total_alistados |
-|-----------------|
-|      1020927    |
-
-```SQL
--- Qual a distribuição de alistados por gênero? e o percentual?
+-- Esta consulta seleciona todos os registros da tabela "bolsas_capes_csv" no banco de dados padrão (default) e os exibe.
 SELECT
-  EXE.SEXO AS Sexo,
-  count(*) AS Total,
-  format_number(count(*)/(SELECT count(*) FROM alistamento_exercito2022),"0.000%") AS Percentual
-FROM alistamento_exercito2022 AS EXE
-GROUP BY EXE.SEXO
+  *
+FROM
+  default.bolsas_capes_csv AS capes;
 ```
-
-| Sexo | Total   | Percentual |
-|------|---------|------------|
-| F    | 79      | 0.008%     |
-| M    | 1020848 | 99.992%    |
-
-Figura 1: Quantidade por Gênero
-
-![newplot (2)](https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/7c0a7d21-f2e0-4137-894b-1f135d7c3513)
-
 ```SQL
--- Distribuição de alistados por gênero x Região e total por região
-SELECT 
-    COALESCE(EST.`Região`, 'Exterior') AS Regiao,
-    SUM(CASE WHEN EXE.SEXO = "F" THEN 1 ELSE 0 END) AS Feminino,
-    format_number(SUM(CASE WHEN EXE.SEXO = "F" THEN 1 ELSE 0 END)/(SELECT count(*) FROM alistamento_exercito2022 WHERE SEXO = "F"),"0.00%") AS Percent_feminino,
-    SUM(CASE WHEN EXE.SEXO = "M" THEN 1 ELSE 0 END) AS Masculino,
-    format_number(SUM(CASE WHEN EXE.SEXO = "M" THEN 1 ELSE 0 END)/(SELECT count(*) FROM alistamento_exercito2022 WHERE SEXO = "M"),"0.00%") AS Percent_masculino,
-    count(*) AS Total,
-    format_number(count(*)/(SELECT COUNT(*) FROM alistamento_exercito2022),"0.00%") AS Percent_total
-FROM alistamento_exercito2022 EXE
-LEFT JOIN estados_brasileiro EST
-ON EXE.UF_RESIDENCIA = EST.Sigla
-GROUP BY EST.`Região`
-ORDER BY Masculino DESC, Feminino DESC
-```
-
-| Regiao    | Feminino | Percent_feminino | Masculino | Percent_masculino | Total   | Percent_total |
-|-----------|----------|------------------|-----------|-------------------|---------|---------------|
-| Sudeste   | 23       | 29.11%           | 457822    | 44.85%            | 457845  | 44.85%        |
-| Nordeste  | 29       | 36.71%           | 220340    | 21.58%            | 220369  | 21.59%        |
-| Sul       | 17       | 21.52%           | 138259    | 13.54%            | 138276  | 13.54%        |
-| Norte     | 4        | 5.06%            | 119888    | 11.74%            | 119892  | 11.74%        |
-| Centro    | 6        | 7.59%            | 77140     | 7.56%             | 77146   | 7.56%         |
-| Exterior  | 0        | 0.00%            | 7399      | 0.72%             | 7399    | 0.72%         |
-
-Figura 2: Gênero x Região
-
-![image](https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/81acc877-c230-4fe5-a9fd-7c95e862609b)
-
-Figura 3: Total por Região 
-
-![image](https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/97f1f336-b335-4852-a081-072e4de8561d)
-
-Figura 4: Gênero Feminino x Região
-
-![image](https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/4e1c9466-632f-422c-a265-ac0823d5b7ce)
-
-Figura 5: Gênero Masculino x Região
-
-![image](https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/5d369589-a6d7-4613-8eb6-6239760785bd)
-
-```SQL
--- Top 5 estados com maiores alistados no ano de 2022
-SELECT
-  EST.Estado AS Estados,
-  count(*) AS Total,
-  format_number(count(*)/(SELECT count(*) FROM alistamento_exercito2022),"0.00%") AS Percent_total
-FROM alistamento_exercito2022 EXE
-LEFT JOIN estados_brasileiro EST
-ON EXE.UF_RESIDENCIA = EST.Sigla
-GROUP BY EST.Estado
-ORDER BY Total DESC
-LIMIT 5 
-```
-
-Figura 6: Top 5 estados x Gênero Masculino
-
-![image](https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/fae36237-1a66-41bd-99dd-20b0caeddf67)
-
-```SQL
--- Quantos alistados da região Norte estão acima ou igual a média do número de calçado do brasileiro?
-
-WITH media_calcado AS (SELECT avg(EXE.CALCADO) AS media_calcados FROM alistamento_exercito2022 EXE) --Calculando a média do calçado
-
-SELECT 
-    EST.`Região` AS Regiao,
-    count(*) AS Total,
-    format_number(count(*)/(SELECT COUNT(*) FROM alistamento_exercito2022 EXE INNER JOIN estados_brasileiro EST ON EXE.UF_RESIDENCIA = EST.Sigla WHERE EST.`Região` = 'Nordeste'),"0.00%") AS Percent_total
-FROM alistamento_exercito2022 EXE
-LEFT JOIN estados_brasileiro EST
-ON EXE.UF_RESIDENCIA = EST.Sigla
-CROSS JOIN media_calcado
-WHERE EXE.CALCADO >= media_calcados AND EST.`Região` = 'Nordeste'
-GROUP BY EST.`Região`
-```
-
-| Regiao   | Total | Percent_total |
-|----------|-------|---------------|
-| Nordeste | 31232 | 14.17%        |
-
-```SQL
--- Quantos alistados da Região Sul possuem Ensino Superior Completo?
-SELECT 
-  EST.`Região`,
-  (SELECT count(*) FROM alistamento_exercito2022 EXE INNER JOIN estados_brasileiro EST ON EXE.UF_RESIDENCIA = EST.Sigla WHERE EST.`Região` = 'Sudeste') AS Total_Sudeste,
-  count(*) AS Total_Ensino_Sup,
-  format_number(count(*)/(SELECT count(*) FROM alistamento_exercito2022 EXE INNER JOIN estados_brasileiro EST ON EXE.UF_RESIDENCIA = EST.Sigla WHERE EST.`Região` = 'Sudeste'),"0.00%") AS Percent_Ensino_Sup
-FROM alistamento_exercito2022 EXE
-  INNER JOIN estados_brasileiro EST
-  ON EXE.UF_RESIDENCIA = EST.Sigla
-WHERE EXE.ESCOLARIDADE = 'Ensino Superior Completo' AND EST.`Região` = 'Sudeste'
-GROUP BY EST.`Região`
-```
-
-| Região   | Total_Sudeste | Total_Ensino_Sup | Percent_Ensino_Sup |
-|----------|---------------|-------------------|--------------------|
-| Sudeste  | 457845        | 684               | 0.15%              |
-
-```SQL
--- Top 3 estados com maior número de alistados dentro do peso médio brasileiro
-WITH var_peso_medio AS (SELECT avg(EXE.PESO) AS peso_medio FROM alistamento_exercito2022 EXE)
+-- Esta consulta calcula o total de bolsas concedidas, contando o número de registros na tabela "bolsas_capes_csv".
 
 SELECT
-  EST.Sigla AS Estados,
-  count(*) AS Dentro_peso
-FROM alistamento_exercito2022 EXE
-INNER JOIN estados_brasileiro EST
-ON EXE.UF_RESIDENCIA = EST.Sigla
-CROSS JOIN var_peso_medio
-WHERE EXE.PESO <= peso_medio
-GROUP BY EST.Sigla
-ORDER BY Dentro_peso DESC
-LIMIT 3
+  COUNT(*) AS `Total Bolsas`
+FROM
+  bolsas_capes_csv AS capes;
 ```
-Figura 7: Top 3 estados x Peso
-
-![image](https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/79b95d47-c789-4491-b202-6df98f8d4e26)
-
-```SQL
--- Qual a distribuição de alistados por tipo de zona (Rural ou Urbana)?
-SELECT
-  EXE.ZONA_RESIDENCIAL AS Zona,
-  count(*) AS Total,
-  format_number(count(*)/(SELECT count(*) AS total_alistado FROM alistamento_exercito2022),"0.00%") AS Percent_total
-FROM alistamento_exercito2022 EXE
-GROUP BY EXE.ZONA_RESIDENCIAL
-```
-Figura 8: Zona x Alistados
-
-![image](https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/96cf6467-ae8e-477a-9251-9ab64aa0c98e)
-
-```SQL
--- Analisar a faixa etária x gênero dos alistados
-
-WITH ano_atual AS(SELECT year(getdate()) AS var_ano_atual)
-
-SELECT
-  CASE
-    WHEN (var_ano_atual - EXE.ANO_NASCIMENTO) <= 28 THEN '18-28'
-    WHEN (var_ano_atual - EXE.ANO_NASCIMENTO) > 28 AND (var_ano_atual - EXE.ANO_NASCIMENTO) <= 38 THEN '28-38'
-    WHEN (var_ano_atual - EXE.ANO_NASCIMENTO) > 38 AND (var_ano_atual - EXE.ANO_NASCIMENTO) <= 48 THEN '38-48'
-    WHEN (var_ano_atual - EXE.ANO_NASCIMENTO) > 48 AND (var_ano_atual - EXE.ANO_NASCIMENTO) <= 58 THEN '48-58'
-    ELSE '58-100'
-  END AS Faixa_etaria,
-  SUM(CASE WHEN EXE.SEXO = "F" THEN 1 ELSE 0 END) AS Feminino,
-  format_number(SUM(CASE WHEN EXE.SEXO = "F" THEN 1 ELSE 0 END) / (SELECT count(*) FROM alistamento_exercito2022 WHERE SEXO = "F"),"0.0000%") AS Perc_Feminino,
-  SUM(CASE WHEN EXE.SEXO = "M" THEN 1 ELSE 0 END) AS Masculino,
-  format_number(SUM(CASE WHEN EXE.SEXO = "M" THEN 1 ELSE 0 END) / (SELECT count(*) FROM alistamento_exercito2022 WHERE SEXO = "M"),"0.0000%") AS Perc_Masculino
-FROM alistamento_exercito2022 EXE
-CROSS JOIN ano_atual
-GROUP BY Faixa_etaria
-ORDER BY Faixa_etaria ASC
-```
-Figura 9: Faixa x Gênero
-
-![newplot (3)](https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/80e8f3bd-b7d0-4100-aaa0-04d605b4afd3)
-
-```SQL
--- Qual a idade máxima dos alistados do gênero feminino?
-
-SELECT
-  max(year(getdate())- EXE.ANO_NASCIMENTO) AS Idade_Maxima
-FROM alistamento_exercito2022 EXE
-WHERE EXE.SEXO = "F"
-```
-| Idade_Maxima |
+| Total Bolsas |
 |--------------|
-|       39     |
+|      18653   |
 
 ```SQL
--- Qual o peso médio dos alistados do gênero MASCULINO? e do FEMININO?
+-- Esta consulta calcula a quantidade total de beneficiários distintos presentes na tabela "bolsas_capes_csv".
+
 SELECT
-  EXE.SEXO AS `Gênero`,
-  round(avg(EXE.PESO),2) AS `Peso Médio`
-FROM alistamento_exercito2022 EXE
-GROUP BY EXE.SEXO
+  COUNT(DISTINCT(capes.beneficiario)) AS `Total Beneficiários`
+FROM
+  bolsas_capes_csv AS capes;
 ```
-Figura 10: Peso Médio x Gênero
-
-![image](https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/e1b29fcb-983b-4014-b7a6-100c52fd1430)
+| Total Beneficiários |
+|---------------------|
+|        13380        |
 
 ```SQL
--- Dentre os pesos entre os gêneros, quantos estão acima do peso conforme o IMC?
+-- Este bloco de código calcula a quantidade de beneficiários por ano e cria uma tabela temporária chamada quantidade_beneficiarios.
 
-/*
-IMC:
-Abaixo do peso: IMC abaixo de 18,5
-Peso normal: IMC entre 18,5 e 24,9
-Sobrepeso: IMC entre 25 e 29,9
-Obesidade Classe I: IMC entre 30 e 34,9
-Obesidade Classe II: IMC entre 35 e 39,9
-Obesidade Classe III: IMC 40 ou acima
-*/
+WITH quantidade_beneficiarios AS (
+  -- Esta subconsulta calcula a quantidade de beneficiários por ano e mês.
+  SELECT
+    capes.ano_inicial AS Ano,
+    capes.mes_inicial AS Mes,
+    count(DISTINCT(capes.beneficiario)) AS `Total Beneficiários`
+  FROM
+    bolsas_capes_csv AS capes
+  GROUP BY
+    capes.ano_inicial,
+    capes.mes_inicial
+)
 
+-- Esta consulta principal utiliza a tabela temporária quantidade_beneficiarios para calcular o total acumulado de beneficiários, bem como a variação percentual ano a ano (YoY).
 
 SELECT
-  CASE
-    WHEN EXE.PESO/pow(EXE.ALTURA*0.01,2) <= 18.5 THEN 'Abaixo do peso'
-    WHEN EXE.PESO/pow(EXE.ALTURA*0.01,2) > 18.5 AND EXE.PESO/pow(EXE.ALTURA*0.01,2) <= 24.9 THEN 'Peso Normal'
-    WHEN EXE.PESO/pow(EXE.ALTURA*0.01,2) > 25 AND EXE.PESO/pow(EXE.ALTURA*0.01,2) <= 29.9 THEN 'Sobrepeso'
-    WHEN EXE.PESO/pow(EXE.ALTURA*0.01,2) > 30 AND EXE.PESO/pow(EXE.ALTURA*0.01,2) <= 34.9 THEN 'Obsidade Classe 1'
-    WHEN EXE.PESO/pow(EXE.ALTURA*0.01,2) > 35 AND EXE.PESO/pow(EXE.ALTURA*0.01,2) <= 39.9 THEN 'Obsidade Classe 2'
-    ELSE 'Obsidade Classe 3'
-  END AS indice_imc,
+  Ano,
+  Mes,
+  `Total Beneficiários`,
+  -- Esta expressão calcula o total acumulado de beneficiários até o momento atual.
+  sum(`Total Beneficiários`) OVER (
+    ORDER BY
+      Ano ROWS BETWEEN UNBOUNDED PRECEDING
+      AND CURRENT ROW
+  ) AS `Total Acumulado`,
+  -- Esta expressão calcula a variação percentual ano a ano (YoY) no número de beneficiários.
+  format_number(
+    (
+      `Total Beneficiários` - lag(`Total Beneficiários`) OVER (
+        ORDER BY
+          Ano
+      )
+    ) / lag(`Total Beneficiários`) OVER (
+      ORDER BY
+        Ano
+    ),
+    "0.00%"
+  ) AS YoY
+FROM
+  quantidade_beneficiarios
+ORDER BY
+  Ano ASC,
+  Mes ASC;
+```
+
+| Ano  | Mes | Total Beneficiários | Total Acumulado | YoY    |
+|------|-----|---------------------|-----------------|--------|
+| 2005 |   4 |                   1 |            null |        |
+| 2005 |   9 |                   1 |               2 | 0.00%  |
+| 2006 |   3 |                  18 |              97 | -56.10%|
+| 2006 |   4 |                  18 |             115 | 0.00%  |
+| 2006 |   6 |                   1 |               8 | 0.00%  |
+| 2006 |   7 |                   1 |               7 | -75.00%|
+| 2006 |   8 |                  27 |             142 | 50.00% |
+| 2006 |   9 |                  41 |              79 | 36.67% |
+| 2006 |  10 |                  30 |              38 | 2900.00%|
+| 2006 |  11 |                   8 |             150 | -70.37%|
+
+
+Figura 1: Quantidade de beneficiários x Ano x Mês
+
+![image](https://github.com/AlbertoFAraujo/SQL_EDA_Capes/assets/105552990/d7b06154-340e-45fe-8880-100b425675bf)
+
+Figura 2: Acumulado x Ano
+
+![image](https://github.com/AlbertoFAraujo/SQL_EDA_Capes/assets/105552990/20c5eb7c-92b8-49da-af2d-2e8ce41bf08a)
+
+
+```SQL
+-- Esta consulta cria ou altera uma view chamada "vw_bolsas_valores" que contém informações sobre beneficiários com mais de uma bolsa e o valor total das bolsas, considerando conversão de moeda, se disponível.
+ALTER VIEW vw_bolsas_valores AS(
+  SELECT
+    capes.beneficiario AS `Beneficiário`,
+    COUNT(*) AS `Quantidade de Bolsas`,
+    CASE
+      WHEN COUNT(*) = 1 THEN '1'
+      WHEN COUNT(*) >= 2
+      AND COUNT(*) <= 4 THEN '2-4'
+      ELSE '5-6'
+    END AS `Faixa Bolsas`,
+    ROUND(
+      SUM(
+        IF(
+          capes.sigla_moeda = 'BRL',
+          capes.valor_recebido_total,
+          capes.valor_recebido_total * moeda.`Fator conversao`
+        )
+      ),
+      2
+    ) AS `Valor das Bolsas com conversão`
+  FROM
+    bolsas_capes_csv AS capes
+    LEFT JOIN conversao_moeda_1_csv moeda ON capes.sigla_moeda = moeda.Moeda
+  GROUP BY
+    capes.beneficiario
+);
+-- Esta consulta seleciona os dados da view "vw_bolsas_valores" e agrupa por faixa de bolsas, ou seja, quantas pessoas possuem até 6 bolsas registradas em seu nome
+-- A coluna Quantidade Bolsista informa o número por cpf distinto
+SELECT
+  `Faixa Bolsas`,
+  COUNT(*) AS Total,
+  format_number(
+    COUNT(*) /(
+      SELECT
+        COUNT(*)
+      FROM
+        vw_bolsas_valores
+    ),
+    "0.00%"
+  ) AS Percent_Total
+FROM
+  vw_bolsas_valores AS capes
+GROUP BY
+  `Faixa Bolsas`
+ORDER BY
+  `Faixa Bolsas` ASC
+```
+
+| Faixa Bolsas | Total | Percent_Total |
+|--------------|-------|---------------|
+|            1 |  9217 |         68.89%|
+|          2-4 |  4161 |         31.10%|
+|          5-6 |     2 |          0.01%|
+
+
+Figura 3: Total de bolsas x beneficiários
+
+![image](https://github.com/AlbertoFAraujo/SQL_EDA_Capes/assets/105552990/ddf8aae9-9d28-47d7-b4cc-dc4879e7f6d1)
+
+```SQL
+-- Esta consulta seleciona os dados da view "vw_bolsas_valores" e os ordena pelo valor total das bolsas sem conversão em ordem decrescente, limitando os resultados às 5 primeiras linhas.
+
+SELECT
+  capes.`Faixa Bolsas`,
+  capes.`Valor das Bolsas com conversão`
+FROM
+  vw_bolsas_valores AS capes
+ORDER BY
+  `Valor das Bolsas com conversão` DESC
+LIMIT
+  5;
+```
+| Faixa Bolsas | Valor das Bolsas com conversão |
+|--------------|--------------------------------|
+|          2-4 |                      1142276.9|
+|          2-4 |                      1123586.51|
+|          2-4 |                      1048089.4 |
+|          2-4 |                      1017713.69|
+|          2-4 |                      1003164.38|
+
+
+```SQL
+-- Esta consulta calcula a duração em anos de cada bolsa, o total de bolsas para cada duração e a porcentagem de bolsas em relação ao total de bolsas.
+
+SELECT
+  (capes.ano_final - capes.ano_inicial) AS `Duração (anos)`,
+  count(*) AS `Total Bolsas`,
+  format_number(
+    COUNT(*) / (
+      SELECT
+        COUNT(*)
+      FROM
+        bolsas_capes_csv
+    ),
+    "0.00%"
+  ) AS Percent_Bolsas
+FROM
+  bolsas_capes_csv AS capes
+GROUP BY
+  `Duração (anos)`
+ORDER BY
+  `Total Bolsas` DESC;
+```
+
+| Duração (anos) | Total Bolsas | Percent_Bolsas |
+|----------------|--------------|----------------|
+|              1 |         9271 |         49.70% |
+|              2 |            0 |         36.71% |
+|              3 |         1308 |          7.01% |
+|              4 |          634 |          3.40% |
+|              5 |          459 |          2.46% |
+|              6 |           69 |          0.37% |
+|              7 |           34 |          0.18% |
+|              8 |           19 |          0.10% |
+|              9 |           10 |          0.05% |
+|             10 |            2 |          0.01% |
+
+
+```SQL
+-- Esta consulta seleciona os valores totais das bolsas convertidos para a moeda local, se aplicável, e remove valores duplicados.
+
+SELECT
+  DISTINCT(
+    IF(
+      capes.sigla_moeda = 'BRL',
+      capes.valor_recebido_total * 1,
+      capes.valor_recebido_total * moeda.`Fator conversao`
+    )
+  ) AS Valores
+FROM
+  bolsas_capes_csv AS capes
+  LEFT JOIN conversao_moeda_1_csv AS moeda ON capes.sigla_moeda = moeda.Moeda
+WHERE
+  capes.valor_recebido_total > 0
+ORDER BY
+  Valores DESC;
+```
+Figura 4: Boxplot dos valores das bolsas
+![image](https://github.com/AlbertoFAraujo/SQL_EDA_Capes/assets/105552990/56410606-5718-4e62-a833-c1e88f54c332)
+
+
+
+```SQL
+-- Esta consulta seleciona informações sobre a bolsa com o maior valor recebido convertido para a moeda local, se disponível.
+
+SELECT
+  capes.ano_inicial,
+  capes.ano_final,
+  capes.beneficiario,
+  capes.programa_capes,
+  capes.pais_destino,
+  capes.sigla_moeda,
+  capes.grande_area_conhecimento,
+  capes.nivel_ensino,
+  capes.valor_recebido_total,
+  moeda.`Fator conversao`,
+  capes.valor_recebido_total * moeda.`Fator conversao` AS valor_recebido_convertido
+FROM
+  bolsas_capes_csv AS capes
+  LEFT JOIN conversao_moeda_1_csv AS moeda ON capes.sigla_moeda = moeda.Moeda
+ORDER BY
+  valor_recebido_convertido DESC
+LIMIT
+  1;
+```
+
+```SQL
+-- Esta consulta calcula a quantidade de bolsas por programa da Capes.
+
+SELECT
+  capes.programa_capes,
+  COUNT(*) AS Total,
+  format_number(
+    COUNT(*) / (
+      SELECT
+        COUNT(*)
+      FROM
+        bolsas_capes_csv
+    ),
+    "0.00%"
+  ) AS Percent_Bolsas
+FROM
+  bolsas_capes_csv AS capes
+GROUP BY
+  capes.programa_capes
+ORDER BY
+  Total DESC;
+```
+
+| programa_capes                                                                                      | Total | Percent_Bolsas |
+|-----------------------------------------------------------------------------------------------------|-------|----------------|
+| PDSE - PROGRAMA DE DOUTORADO SANDUÍCHE NO EXTERIOR                                                  | 5890  | 31.58%         |
+| GS/CSF - GRADUAÇÃO SANDUÍCHE - PROGRAMA CIÊNCIA SEM FRONTEIRAS                                       | 1394  | 7.47%          |
+| PDEE - ESTÁGIO DE DOUTORANDO                                                                        | 1136  | 6.09%          |
+| PPDE - PROGRAMA DE PÓS-DOUTORADO NO EXTERIOR                                                         | 969   | 5.19%          |
+| BRAFITEC - BRASIL FRANÇA ENGENHARIA TECNOLOGIA                                                       | 833   | 4.47%          |
+| DPE - PROGRAMA DE DOUTORADO PLENO NO EXTERIOR                                                        | 827   | 4.43%          |
+| PROGRAMA ESTUDANTES CONVÊNIO DE PÓS-GRADUAÇÃO                                                        | 671   | 3.60%          |
+| ES - PROGRAMA DE ESTÁGIO SÊNIOR NO EXTERIOR                                                          | 632   | 3.39%          |
+| PDPI - PROGRAMA DE DESENVOLVIMENTO PROFISSIONAL PARA PROFESSORES DE LÍNGUA INGLESA NOS ESTADOS UNIDOS | 537   | 2.88%          |
+
+
+```SQL
+-- Esta consulta calcula a quantidade de bolsas por país de destino, mostrando apenas os 10 principais países.
+
+SELECT
+  temp.pais_destino,
+  COUNT(*) AS Quantidade,
+  FORMAT_NUMBER(
+    COUNT(*) / (
+      SELECT
+        COUNT(*)
+      FROM
+        (
+          SELECT
+            DISTINCT(capes.cpf),
+            capes.pais_destino
+          FROM
+            bolsas_capes_csv AS capes
+        )
+    ),
+    "0.00%"
+  ) AS Percent_total
+FROM
+  (
+    SELECT
+      DISTINCT(capes.cpf),
+      capes.pais_destino
+    FROM
+      bolsas_capes_csv AS capes
+  ) AS temp
+GROUP BY
+  temp.pais_destino
+ORDER BY
+  Quantidade DESC
+LIMIT
+  10;
+```
+
+Figura 5: Top 10 países destino
+![image](https://github.com/AlbertoFAraujo/SQL_EDA_Capes/assets/105552990/d68a0e86-e118-49b2-bd2a-ab8cbb899b1b)
+
+
+```SQL
+-- Esta consulta cria uma nova view chamada "vw_capes_unique" para restringir as bolsas apenas por CPF.
+
+ALTER VIEW vw_capes_unique AS (
+  SELECT
+    DISTINCT(capes.cpf) AS temp,
+    *
+  FROM
+    bolsas_capes_csv AS capes
+);
+
+```
+
+```SQL
+-- Quantidade de bolsas por Área do Programa
+SELECT
+  coalesce(temp.grande_area_conhecimento, 'NÃO INFORMADO') AS `Grande Área`,
   count(*) AS Total,
-  format_number(count(*)/(SELECT count(*) FROM alistamento_exercito2022),"0.00%") AS Percent_total
-FROM alistamento_exercito2022 EXE
-GROUP BY indice_imc
+  format_number(
+    COUNT(*) /(
+      SELECT
+        COUNT(*)
+      FROM
+        vw_capes_unique
+    ),
+    "0.00%"
+  ) AS Percent_total
+FROM
+  vw_capes_unique AS temp
+GROUP BY
+  temp.grande_area_conhecimento
+ORDER BY
+  Total DESC
+```
+
+Figura 6: Área x distribuição de bolsas
+
+![image](https://github.com/AlbertoFAraujo/SQL_EDA_Capes/assets/105552990/54d43a62-217c-4097-80f9-a4e77c63826f)
+
+
+```SQL
+-- Esta consulta calcula o número de bolsas por grande área de conhecimento.
+
+SELECT
+  COALESCE(capes.area_conhecimento, 'NÃO INFORMADO') AS `Área Específica`,
+  COUNT(*) AS Total,
+  FORMAT_NUMBER(
+    COUNT(*) / (
+      SELECT
+        COUNT(*)
+      FROM
+        vw_capes_unique
+    ),
+    "0.00%"
+  ) AS Percent_total
+FROM
+  vw_capes_unique AS capes
+GROUP BY
+  capes.area_conhecimento
+ORDER BY
+  Total DESC;
+```
+
+| Área Específica       | Total | Percent_total |
+|-----------------------|-------|---------------|
+| NÃO INFORMADO         | 5957  | 31.95%        |
+| EDUCAÇÃO              | 676   | 3.63%         |
+| AGRONOMIA             | 623   | 3.34%         |
+| ENGENHARIA ELÉTRICA   | 571   | 3.06%         |
+| ENGENHARIA MECÂNICA   | 530   | 2.84%         |
+| MEDICINA              | 529   | 2.84%         |
+| CIÊNCIA DA COMPUTAÇÃO | 525   | 2.82%         |
+| ENGENHARIA DE PRODUÇÃO| 380   | 2.04%         |
+| LETRAS                | 375   | 2.01%         |
+| QUÍMICA               | 344   | 1.84%         |
+
+
+```SQL
+-- Esta consulta calcula o número de bolsas por nível de ensino.
+
+SELECT 
+  COALESCE(capes.nivel_ensino,'NÃO INFORMADO') AS `Nível Ensino`, 
+  COUNT(*) AS Total,
+  FORMAT_NUMBER(COUNT(*) / (SELECT COUNT(*) FROM vw_capes_unique), "0.00%") AS Percent_total
+FROM vw_capes_unique AS capes
+GROUP BY capes.nivel_ensino
 ORDER BY Total DESC
+LIMIT 5;
 ```
-| indice_imc        | Total   | Percent_total |
-|-------------------|---------|---------------|
-| Obsidade Classe 3 | 724180  | 70.93%        |
-| Peso Normal       | 206073  | 20.18%        |
-| Sobrepeso         | 49725   | 4.87%         |
-| Abaixo do peso    | 21907   | 2.15%         |
-| Obsidade Classe 1 | 15396   | 1.51%         |
-| Obsidade Classe 2 | 3646    | 0.36%         |
 
-Figura 11: IMC (Índice de Massa Corporal)
+| Nível Ensino                               | Total | Percent_total |
+|--------------------------------------------|-------|---------------|
+| DOUTORADO SANDUÍCHE                       | 8592  | 46.08%        |
+| GRADUAÇÃO SANDUÍCHE                       | 3988  | 21.39%        |
+| DOUTORADO PLENO                           | 1800  | 9.65%         |
+| ESTÁGIO PÓS-DOUTORAL                      | 1633  | 8.76%         |
+| CAPACITAÇÃO PROFESSORES DA EDUCAÇÃO BÁSICA| 684   | 3.67%         |
 
-![image](https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/52ebf5c3-95e0-49a2-b94a-abef7ae3c73d)
+
 
 ```SQL
--- Relação entre Dispensa ou não com os gêneros:
+-- Esta consulta calcula o número de bolsas por estado de origem da instituição.
+
 SELECT
-  EXE.DISPENSA AS Tipo,
-  SUM(CASE WHEN EXE.SEXO = "F" THEN 1 ELSE 0 END) AS Feminino,
-  format_number(SUM(CASE WHEN EXE.SEXO = "F" THEN 1 ELSE 0 END)/(SELECT count(*) FROM alistamento_exercito2022 EXE WHERE EXE.SEXO = "F"),"0.00%") AS Percent_fem,
-  SUM(CASE WHEN EXE.SEXO = "M" THEN 1 ELSE 0 END) AS Masculino,
-  format_number(SUM(CASE WHEN EXE.SEXO = "M" THEN 1 ELSE 0 END)/(SELECT count(*) FROM alistamento_exercito2022 EXE WHERE EXE.SEXO = "M"),"0.00%") AS Percent_mas
-FROM alistamento_exercito2022 EXE
-GROUP BY EXE.DISPENSA
+  COALESCE(capes.uf_instituicao_origem, 'NÃO INFORMADO') AS `Estado de Origem da Instituição`,
+  COUNT(*) AS Total,
+  FORMAT_NUMBER(
+    COUNT(*) / (
+      SELECT
+        COUNT(*)
+      FROM
+        vw_capes_unique
+    ),
+    "0.00%"
+  ) AS Percent_total
+FROM
+  vw_capes_unique AS capes
+GROUP BY
+  capes.uf_instituicao_origem
+ORDER BY
+  Total DESC
+LIMIT 5;
 ```
-Figura 12: Dispensa por Gênero
 
-![image](https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/95ab80fb-5e8d-4bec-a964-3ad46b721e05)
+Figura 7: Estados x Quantidades de bolsas
+![image](https://github.com/AlbertoFAraujo/SQL_EDA_Capes/assets/105552990/2507505b-a97c-45a4-b84e-598e0ae1debd)
+
+
 
 ```SQL
--- Qual a altura média entre os alistados no geral?
-SELECT round(avg(EXE.ALTURA),2) AS `Altura Média` FROM alistamento_exercito2022 EXE
-```
+-- Esta consulta calcula o número de bolsas por instituição de ensino de origem.
 
-| Altura Média |
-|--------------|
-|   174.41     |
-
-```SQL
--- Altura média por Região
 SELECT
-  EST.`Região`,
-  round(avg(EXE.ALTURA),2) AS `Altura Média`
-FROM alistamento_exercito2022 EXE
-LEFT JOIN estados_brasileiro EST
-ON EXE.UF_RESIDENCIA = EST.Sigla
-GROUP BY EST.`Região`
-ORDER BY `Altura Média` DESC
+  COALESCE(capes.instituicao_ensino_origem, 'NÃO INFORMADO') AS `Instituição de Ensino de Origem`,
+  COUNT(*) AS Total,
+  FORMAT_NUMBER(
+    COUNT(*) / (
+      SELECT
+        COUNT(*)
+      FROM
+        vw_capes_unique
+    ),
+    "0.00%"
+  ) AS Percent_total
+FROM
+  vw_capes_unique AS capes
+GROUP BY
+  capes.instituicao_ensino_origem
+ORDER BY
+  Total DESC
+LIMIT 5;
 ```
 
-Figura 13: Altura Média por Região
+| Instituição de Ensino de Origem           | Total | Percent_total |
+|-------------------------------------------|-------|---------------|
+| UNIVERSIDADE DE SÃO PAULO                 | 1814  | 9.73%         |
+| NÃO INFORMADO                             | 986   | 5.29%         |
+| UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL | 977   | 5.24%         |
+| UNIVERSIDADE FEDERAL DE SANTA CATARINA    | 854   | 4.58%         |
+| UNIVERSIDADE ESTADUAL DE CAMPINAS         | 846   | 4.54%         |
 
-![image](https://github.com/AlbertoFAraujo/SQL_EDA_exercito2022/assets/105552990/6c21177f-f194-4d7e-802c-94de170b6a41)
 
 ```SQL
--- Distribuição de alistados x estado civil
+-- Esta consulta calcula os maiores e menores valores de bolsas por grande área de conhecimento, excluindo valores iguais a zero.
+
 SELECT
-  EXE.ESTADO_CIVIL AS `Estado Civil`,
-  count(*) AS Total,
-  format_number(count(*)/(SELECT count(*) FROM alistamento_exercito2022),"0.000%") AS Percent_total
-FROM alistamento_exercito2022 EXE
-GROUP BY EXE.ESTADO_CIVIL
-ORDER BY Total DESC
+  COALESCE(capes.grande_area_conhecimento, 'NÃO INFORMADO') AS `Grande Área`,
+  ROUND(MAX(capes.valor_recebido_bolsa), 2) AS `Maior valor Bolsa`,
+  ROUND(MIN(capes.valor_recebido_bolsa), 2) AS `Menor valor Bolsa`
+FROM
+  bolsas_capes_csv AS capes
+WHERE
+  capes.valor_recebido_bolsa > 0
+GROUP BY
+  capes.grande_area_conhecimento
+ORDER BY
+  `Maior valor Bolsa` DESC,
+  `Menor valor Bolsa` DESC;
 ```
-| Estado Civil           | Total   | Percent_total |
-|------------------------|---------|---------------|
-| Solteiro               | 1010987 | 99.026%       |
-| Outros                 | 6627    | 0.649%        |
-| Casado                 | 3184    | 0.312%        |
-| Desquitado             | 42      | 0.004%        |
-| Divorciado             | 40      | 0.004%        |
-| Separado Judicialmente | 35      | 0.003%        |
-| Viúvo                  | 12      | 0.001%        |
+| Grande Área                       | Maior valor Bolsa | Menor valor Bolsa |
+|-----------------------------------|-------------------|-------------------|
+| CIÊNCIAS AGRÁRIAS                 | 99000             | 10010             |
+| CIÊNCIAS BIOLÓGICAS               | 99000             | 10010             |
+| CIÊNCIAS DA SAÚDE                 | 99000             | 10010             |
+| MULTIDISCIPLINAR                  | 99000             | 10010             |
+| CIÊNCIAS HUMANAS                  | 9996              | 101000            |
+| ENGENHARIAS                       | 9976              | 10005             |
+| CIÊNCIAS SOCIAIS APLICADAS        | 9947              | 10010             |
+| NÃO INFORMADO                     | 9900              | 10440             |
+| LINGÜÍSTICA, LETRAS E ARTES       | 9900              | 10140             |
+| CIÊNCIAS EXATAS E DA TERRA        | 9900              | 10005             |
 
-## PARECER FINAL DA EXPLORAÇÃO DOS DADOS
-
-1. Em 2022 o número de alistados foi de 1.020.927 pessoas;
-2. Desse total de alistados, 1.020.848 (99,992%) são do gênero masculino e apenas 79 (0,008%) do gênero feminino;
-3. A distribuição do gênero feminino está mais concentrada na região Nordeste do Brasil, sendo 39,97% do total de 79 alistadas, em sequência o Sudeste com 30,38%;
-4. A distribuição do gênero masculino está mais concentrada na região Sudeste do Brasil, sendo 44,04% do total de 1.020.848 alistados, em sequência o Nordeste com 23,26%;
-5. A região do sudeste possui o maior número de alistados em 2022, equivalente a 44,85% do total geral alistado. A região Centro possui o menor número de alistados, equivalente a 7,56%;
-6. O top 3 estados com maiores números de alistados são: RJ(32926), SP(24708) e RS(22344);
-7. 14,17% dos alistados da região Nordeste possuem número de calçado maior ou igual a média do calçado brasileiro(40,95 cm);
-8. 0,15% (684) do total alistados na região sudeste (457.845) possuem Ensino Superior Completo;
-9. Os estados RJ, SP e RS possuem o maior número de alistados dentro do peso médio brasileiro;
-10. A faixa etária predominante dos alistados é entre 18 e 28 anos, sendo equivalente a 98,73% no gênero feminino e 99,98 no gênero masculino. Alguns outliers foram identificados, somente no gênero masculino, como por exemplo pelo menos 6 alistados com faixa etária de 58 a 100 anos;
-11. No gênero feminino, a maior idade registrada foi de 39 anos;
-12. O peso médio do gênero masculino é de 70,13kg e do feminino 63,05kg;
-13. Dentre os alistados, nota-se a predominância de IMC = Obsidade Classe 3 em 70,93% do total geral alistado;
-14. Para o gênero feminino, 65,82% do total de 79 alistadas foram dispensadas, o restante 34,18% não;
-15. Para o gênero masculino, 89,31% do total de 1.020.848 alistados foram dispensados, o restante 10,69% não;
-16. A altura média dos alistados é de 174,41 cm;
-17. Os alistados residentes no exterior possuem o maior registro de altura média, sendo de 182,78 cm. Já dentre as regiões do Brasil, o Sudeste apresenta o maior índice da altura média, equivalente a 175,21. O norte possui a menor média, 172,13cm;
-18. Em relação ao estado civil dos alistados, foi registrado que 99,026% são solteiros.
+****
+### Parecer da Análise Exploratória:
+- Entre 2005 e 2019 foram disponibilizadas cerca de 18653 bolsas Capes, podendo ser vinculada mais de uma bolsa por 	CPF;
+- Foram registrados 13380 beneficiários das bolsas;
+- A quantidade de bolsas concedidas, cresceu de forma constante de 2005 a 2010, um aumento de 500 bolsas. Em 2012 houve um salto de mais 400%, chegando a quase 1000 bolsas. Esse aumento pode estar relacionado a algum programa ou política de incentivo à mobilidade internacional nesse período;
+- A quantidade de bolsas concedidas caiu de forma acentuada de 2012 a 2019, voltando aos níveis de 2005. Em 2019, foram concedidas apenas cerca de 120 bolsas. Essa queda pode estar relacionada a algum fator econômico, político ou social que afetou a disponibilidade ou a demanda por bolsas nesse período;
+- A quantidade de bolsas concedidas variou nos anos intermediários, mas a tendência geral foi descendente após o pico de 2012. Alguns anos apresentaram aumentos ou quedas mais expressivos, como 2009, 2011, 2013 e 2018. Essas flutuações podem estar relacionadas a eventos específicos ou a mudanças pontuais nas condições de concessão das bolsas;
+- 0.01% (2) dos beneficiários de bolsas CAPES possuem entrem 5 e 6 bolsas registradas em seu CPF. 31.10% (4161) de 2 a 4 e 68.89% (9217) possuem apenas o registro de 1 bolsa;
+- O maior valor de bolsa já convertida em Real, considerando a soma das bolsas vinculadas ao mesmo beneficiário(mesmo CPF) foi de R$1.142.276,9 e está na faixa de 2 a 4 bolsas. Os demais 4 maiores valores de bolsas acumulativas também estão na faixa de 2-4 bolsas por CPF. Concluíndo que a quantidade de bolsas não é fator relacionado ao valor da bolsa;
+- A bolsa com maior valor único, sem considerar acumulativa para o mesmo CPF foi registrada em R$887.150,80.
+- Os valores únicos por bolsa, estão dentro do intervalo entre 37k e 120k. Alguns outliers foram identificados com valores de bolsas acima de 230k, sendo o maior valor de bolsa registrado em R$887.150,80 no programa de DPE - PROGRAMA DE DOUTORADO PLENO NO EXTERIOR com destino ao país da Holanda na área de Ciências da Saúde e nível de ensino em Doutorado Pleno;
+- Das 18653 bolsas, 49,70% são para programas de 1 ano e 36,71% para programas inferiores a 1 ano, sendo esses provavelmente referentes a estágios, capacitações, itnercâmbios ou outras modalidades de curta duração;
+- Os programas com duração de 10 anos são destinados ao programa da CAPES: UAB-MOÇAMBIQUE - PROGRAMA DE APOIO À EXPANSÃO DA EDUCAÇÃO SUPERIOR À DISTÂNCIA NA REPÚBLICA DE MOÇAMBIQUE, totalizando um valor de R$20170;
+- O programa PDSE - Programa de Doutorando Sanduíche no Exterior é responsável por 31,58% (5890) das bolsas concedidas do Capes;
+- Estados Unidos é o país com maior indicador de destino das bolsas capes dentre o período analisado, com 26,72% (Cerca de 3580 bolsas destinadas). Em sequência, França com 11,58% de programas destinados;
+- Dentre as grandes áreas disponíveis ao programa de bolsas, 16,18% são destinadas à Ciências Humanas e em seguida 16,16% para Engenharias;
+- Dentre as subáreas de conhecimento, 3,63% (676) das bolsas são dedstinadas à Educação, seguida de 3,34% (623) para Agronomia. 31,95% (5957) não foram informadas na base;
+- Em relação ao nível de ensino, 46,08% (8592) destina-se ao Doutorado Sanduíche e 21,39% (3988) à Graduação Sanduíche;
+- Ao dados demográficos das instituições de ensino, cerca de 25,51% (4756) são do estado de São Paulo e 11,31% (2108) do Rio de Janeiro;
+- 1814 beneficiários das bolsas capes são da Universidade de São Paulo (USP).
 
 
 
