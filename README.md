@@ -582,7 +582,7 @@ ORDER BY
 - O programa PDSE - Programa de Doutorando Sanduíche no Exterior é responsável por 31,58% (5890) das bolsas concedidas do Capes;
 - Estados Unidos é o país com maior indicador de destino das bolsas capes dentre o período analisado, com 26,72% (Cerca de 3580 bolsas destinadas). Em sequência, França com 11,58% de programas destinados;
 - Dentre as grandes áreas disponíveis ao programa de bolsas, 16,18% são destinadas à Ciências Humanas e em seguida 16,16% para Engenharias;
-- Dentre as subáreas de conhecimento, 3,63% (676) das bolsas são dedstinadas à Educação, seguida de 3,34% (623) para Agronomia. 31,95% (5957) não foram informadas na base;
+- Dentre as subáreas de conhecimento, 3,63% (676) das bolsas são destinadas à Educação, seguida de 3,34% (623) para Agronomia. 31,95% (5957) não foram informadas na base;
 - Em relação ao nível de ensino, 46,08% (8592) destina-se ao Doutorado Sanduíche e 21,39% (3988) à Graduação Sanduíche;
 - Ao dados demográficos das instituições de ensino, cerca de 25,51% (4756) são do estado de São Paulo e 11,31% (2108) do Rio de Janeiro;
 - 1814 beneficiários das bolsas capes são da Universidade de São Paulo (USP).
